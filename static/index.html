@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Fire Like Hub — @HAFSAN_KUN</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0a0e1a;
+    --card: #121829;
+    --card2: #1a2238;
+    --border: #2a3350;
+    --primary: #ff4655;
+    --primary2: #ff6b78;
+    --accent: #00d9ff;
+    --text: #e8ecf5;
+    --muted: #8892b0;
+    --success: #00e676;
+    --warn: #ffb300;
+    --danger: #ff1744;
+  }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: radial-gradient(ellipse at top, #151b2e 0%, #0a0e1a 60%);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+  header {
+    background: linear-gradient(135deg, #121829 0%, #1a2238 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .header-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 15px;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 24px; font-weight: 800; letter-spacing: 0.5px;
+  }
+  .logo-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--primary2));
+    display: grid; place-items: center; font-size: 22px;
+    box-shadow: 0 4px 20px rgba(255,70,85,0.4);
+  }
+  .logo span { background: linear-gradient(90deg, #fff, var(--primary2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.3);
+    color: var(--success); padding: 6px 14px; border-radius: 20px;
+    font-size: 13px; font-weight: 600;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .tabs {
+    display: flex; gap: 8px; margin: 25px 0 20px; flex-wrap: wrap;
+  }
+  .tab {
+    padding: 12px 24px; border-radius: 12px; cursor: pointer;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--muted); font-weight: 600; font-size: 15px;
+    transition: all 0.2s; user-select: none;
+  }
+  .tab:hover { border-color: var(--primary); color: var(--text); }
+  .tab.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary2));
+    border-color: transparent; color: #fff;
+    box-shadow: 0 4px 20px rgba(255,70,85,0.4);
+  }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px; margin-bottom: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+  .card-title {
+    font-size: 20px; font-weight: 700; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-sub { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
+  .field label {
+    display: block; font-size: 13px; font-weight: 600;
+    color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .field input, .field select {
+    width: 100%; padding: 14px 16px; border-radius: 12px;
+    background: var(--card2); border: 1px solid var(--border);
+    color: var(--text); font-size: 15px; outline: none;
+    transition: all 0.2s;
+  }
+  .field input:focus, .field select:focus {
+    border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255,70,85,0.15);
+  }
+  .field input::placeholder { color: #5a6478; }
+  .btn {
+    width: 100%; padding: 16px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, var(--primary), var(--primary2));
+    color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; margin-top: 20px;
+    box-shadow: 0 4px 20px rgba(255,70,85,0.4);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,70,85,0.5); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .result-box { margin-top: 24px; display: none; }
+  .result-box.show { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .player-card {
+    background: linear-gradient(135deg, #1a2238, #121829);
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 24px; display: flex; align-items: center; gap: 20px;
+    flex-wrap: wrap;
+  }
+  .avatar {
+    width: 70px; height: 70px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: grid; place-items: center; font-size: 28px; font-weight: 800;
+  }
+  .player-info { flex: 1; min-width: 200px; }
+  .player-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .player-uid { color: var(--muted); font-size: 14px; font-family: monospace; }
+
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px; margin-top: 20px;
+  }
+  .stat {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px; text-align: center;
+  }
+  .stat-value { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+  .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat.primary .stat-value { color: var(--primary2); }
+  .stat.success .stat-value { color: var(--success); }
+  .stat.accent .stat-value { color: var(--accent); }
+  .stat.warn .stat-value { color: var(--warn); }
+
+  .table-wrap { overflow-x: auto; margin-top: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th {
+    text-align: left; padding: 12px; color: var(--muted);
+    font-weight: 600; font-size: 12px; text-transform: uppercase;
+    border-bottom: 1px solid var(--border); letter-spacing: 0.5px;
+  }
+  td { padding: 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .badge {
+    display: inline-block; padding: 4px 10px; border-radius: 8px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+  }
+  .badge.ok { background: rgba(0,230,118,0.15); color: var(--success); }
+  .badge.bad { background: rgba(255,23,68,0.15); color: var(--danger); }
+  .badge.warn { background: rgba(255,179,0,0.15); color: var(--warn); }
+  .badge.role { background: rgba(0,217,255,0.15); color: var(--accent); }
+
+  .mono { font-family: monospace; font-size: 13px; color: var(--muted); }
+
+  .toast {
+    position: fixed; bottom: 30px; right: 30px;
+    background: var(--card2); border: 1px solid var(--border);
+    border-left: 4px solid var(--primary); border-radius: 12px;
+    padding: 16px 22px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    transform: translateX(400px); transition: transform 0.3s;
+    max-width: 350px; z-index: 999;
+  }
+  .toast.show { transform: translateX(0); }
+  .toast.error { border-left-color: var(--danger); }
+  .toast.success { border-left-color: var(--success); }
+
+  .loading-spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+    margin-right: 8px; vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .footer {
+    text-align: center; color: var(--muted); font-size: 13px;
+    margin-top: 40px; padding: 20px 0;
+  }
+  .footer a { color: var(--primary2); text-decoration: none; }
+
+  .empty { text-align: center; padding: 40px; color: var(--muted); }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+
+  .info-note {
+    background: rgba(0,217,255,0.08); border: 1px solid rgba(0,217,255,0.25);
+    border-radius: 12px; padding: 14px 18px; margin-top: 16px;
+    font-size: 13px; color: var(--accent); line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container header-inner">
+    <div class="logo">
+      <div class="logo-icon">🔥</div>
+      <span>Free Fire Like Hub</span>
+    </div>
+    <div class="status-badge">
+      <span class="dot"></span>
+      <span id="serverStatus">Connected</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="tabs">
+    <div class="tab active" data-tab="like">❤️ লাইক দিন</div>
+    <div class="tab" data-tab="stats">📊 স্ট্যাটাস</div>
+    <div class="tab" data-tab="tokens">🔑 টোকেন</div>
+  </div>
+
+  <div id="tab-like" class="tab-content">
+    <div class="card">
+      <div class="card-title">🎯 প্লেয়ারকে লাইক দিন</div>
+      <div class="card-sub">UID দিয়ে সার্চ করুন এবং লাইক পাঠান। সার্ভার সিলেক্ট করুন।</div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>Player UID</label>
+          <input type="text" id="uidInput" placeholder="যেমন: 11214489525" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>Server</label>
+          <select id="serverSelect">
+            <option value="BD">BD — Bangladesh</option>
+            <option value="IND">IND — India</option>
+            <option value="US">US — United States</option>
+            <option value="BR">BR — Brazil</option>
+            <option value="SAC">SAC — South America</option>
+            <option value="NA">NA — North America</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn" id="likeBtn" onclick="sendLike()">
+        ❤️ লাইক পাঠান
+      </button>
+
+      <div class="result-box" id="resultBox">
+        <div class="player-card">
+          <div class="avatar" id="avatarInitial">?</div>
+          <div class="player-info">
+            <div class="player-name" id="resultNickname">—</div>
+            <div class="player-uid">UID: <span id="resultUid">—</span></div>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat primary">
+            <div class="stat-value" id="statGiven">0</div>
+            <div class="stat-label">Likes Given</div>
+          </div>
+          <div class="stat accent">
+            <div class="stat-value" id="statBefore">0</div>
+            <div class="stat-label">Likes Before</div>
+          </div>
+          <div class="stat success">
+            <div class="stat-value" id="statAfter">0</div>
+            <div class="stat-label">Likes After</div>
+          </div>
+          <div class="stat warn">
+            <div class="stat-value" id="statTokens">0</div>
+            <div class="stat-label">Tokens Used</div>
+          </div>
+        </div>
+
+        <div class="info-note">
+          <strong>ℹ️ নোট:</strong> <code>Likes Given</code> হলো এই রিকোয়েস্টে সফলভাবে পাঠানো লাইকের সংখ্যা।
+          <code>Likes Before/After</code> প্রোফাইল-চেক টোকেনের মালিকের লাইক কাউন্ট (টার্গেটের নয়)।
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-stats" class="tab-content" style="display:none">
+    <div class="card">
+      <div class="card-title">📊 আজকের স্ট্যাটাস (UTC)</div>
+      <div class="card-sub" id="statsDate">—</div>
+      <div class="stats-grid" id="statsGrid">
+        <div class="empty" style="grid-column:1/-1"><div class="empty-icon">⏳</div>লোড হচ্ছে...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📈 সার্ভার কনফিগারেশন</div>
+      <div class="stats-grid" id="configGrid"></div>
+    </div>
+  </div>
+
+  <div id="tab-tokens" class="tab-content" style="display:none">
+    <div class="card">
+      <div class="card-title">🔑 টোকেন তালিকা</div>
+      <div class="card-sub">প্রোফাইল চেক টোকেন (প্রথম ১৫টি) এবং লাইক টোকেন (বাকিগুলো) আলাদা দেখানো হয়েছে।</div>
+      <div class="table-wrap" id="tokensTable">
+        <div class="empty"><div class="empty-icon">⏳</div>লোড হচ্ছে...</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Powered by <a href="#">@HAFSAN_KUN</a> · Free Fire Like Hub
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = "";  // same origin (Vercel-এ হোস্ট করলে খালি রাখুন)
+const API_KEY  = "hkysxbhyws";
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).style.display = 'block';
+    if (tab.dataset.tab === 'stats') loadStats();
+    if (tab.dataset.tab === 'tokens') loadTokens();
+  });
+});
+
+let toastTimer;
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+async function sendLike() {
+  const uid = document.getElementById('uidInput').value.trim();
+  const server = document.getElementById('serverSelect').value;
+  const btn = document.getElementById('likeBtn');
+
+  if (!uid || !/^\d+$/.test(uid)) {
+    showToast('সঠিক UID দিন (শুধু সংখ্যা)', 'error');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span> লাইক পাঠানো হচ্ছে...';
+
+  try {
+    const url = `${API_BASE}/like?key=${encodeURIComponent(API_KEY)}&uid=${encodeURIComponent(uid)}&server_name=${encodeURIComponent(server)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || data.message || 'রিকোয়েস্ট ব্যর্থ');
+
+    document.getElementById('resultUid').textContent = data.UID || uid;
+    document.getElementById('resultNickname').textContent = data.PlayerNickname || 'Unknown';
+    document.getElementById('avatarInitial').textContent =
+      (data.PlayerNickname || '?').charAt(0).toUpperCase();
+    document.getElementById('statGiven').textContent = data.LikesGivenByAPI ?? 0;
+    document.getElementById('statBefore').textContent = data.LikesbeforeCommand ?? 0;
+    document.getElementById('statAfter').textContent = data.LikesafterCommand ?? 0;
+    document.getElementById('statTokens').textContent = data.TokensUsedThisRequest ?? 0;
+    document.getElementById('resultBox').classList.add('show');
+
+    if (data.status === 1) {
+      showToast(`✅ ${data.LikesGivenByAPI} লাইক সফলভাবে পাঠানো হয়েছে!`, 'success');
+    } else {
+      showToast(`⚠️ ${data.message || 'লাইক পাঠানো যায়নি'}`, 'error');
+    }
+  } catch (err) {
+    showToast('❌ ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '❤️ লাইক পাঠান';
+  }
+}
+
+async function loadStats() {
+  const grid = document.getElementById('statsGrid');
+  const cfg = document.getElementById('configGrid');
+  grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⏳</div>লোড হচ্ছে...</div>';
+  cfg.innerHTML = '';
+
+  try {
+    const res = await fetch(`${API_BASE}/token_info?key=${encodeURIComponent(API_KEY)}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'লোড ব্যর্থ');
+
+    document.getElementById('statsDate').textContent = `তারিখ: ${data.date_utc || '—'}`;
+    document.getElementById('serverStatus').textContent = 'Connected';
+
+    const s = data.summary || {};
+    const stats = [
+      { v: s.total_used ?? 0, l: 'মোট ব্যবহৃত', c: 'primary' },
+      { v: s.total_capacity ?? 0, l: 'মোট ক্ষমতা', c: 'accent' },
+      { v: s.remaining ?? 0, l: 'অবশিষ্ট', c: 'success' },
+      { v: s.like_used ?? 0, l: 'লাইক ব্যবহৃত', c: 'warn' },
+      { v: s.like_capacity ?? 0, l: 'লাইক ক্ষমতা', c: 'primary' },
+      { v: s.profile_used ?? 0, l: 'প্রোফাইল ব্যবহৃত', c: 'accent' },
+      { v: s.like_tokens ?? 0, l: 'লাইক টোকেন', c: 'success' },
+      { v: s.profile_check_tokens ?? 0, l: 'প্রোফাইল টোকেন', c: 'warn' },
+    ];
+
+    grid.innerHTML = stats.map(x => `
+      <div class="stat ${x.c}">
+        <div class="stat-value">${x.v}</div>
+        <div class="stat-label">${x.l}</div>
+      </div>
+    `).join('');
+
+    const c = data.config || {};
+    const configs = [
+      { v: c.LIKES_PER_TOKEN_PER_DAY ?? '—', l: 'লাইক/টোকেন/দিন' },
+      { v: c.PROFILE_CHECK_TOKEN_COUNT ?? '—', l: 'প্রোফাইল টোকেন সীমা' },
+      { v: c.ALLOW_PROFILE_TOKENS_AS_FALLBACK ? 'চালু' : 'বন্ধ', l: 'Fallback' },
+    ];
+    cfg.innerHTML = configs.map(x => `
+      <div class="stat accent">
+        <div class="stat-value" style="font-size:20px">${x.v}</div>
+        <div class="stat-label">${x.l}</div>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">❌</div>${err.message}</div>`;
+    document.getElementById('serverStatus').textContent = 'Error';
+  }
+}
+
+async function loadTokens() {
+  const box = document.getElementById('tokensTable');
+  box.innerHTML = '<div class="empty"><div class="empty-icon">⏳</div>লোড হচ্ছে...</div>';
+
+  try {
+    const res = await fetch(`${API_BASE}/token_info?key=${encodeURIComponent(API_KEY)}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'লোড ব্যর্থ');
+
+    const profileTokens = data.profile_check_tokens || [];
+    const likeTokens = data.like_tokens || [];
+
+    const rowHtml = (t) => `
+      <tr>
+        <td class="mono">${t.account_id ?? '—'}</td>
+        <td>${t.token_preview ?? '—'}</td>
+        <td>
+          <span class="badge ${t.alive ? 'ok' : 'bad'}">${t.alive ? 'Alive' : 'Dead'}</span>
+          <span class="badge role">${t.role === 'profile_check' ? 'Profile' : 'Like'}</span>
+        </td>
+        <td>${t.used ?? 0}</td>
+        <td>${t.remaining ?? 0}</td>
+        <td>
+          <span class="badge ${t.exhausted ? 'warn' : 'ok'}">
+            ${t.exhausted ? 'Exhausted' : 'Available'}
+          </span>
+        </td>
+      </tr>`;
+
+    let html = `
+      <table>
+        <thead><tr>
+          <th>Account ID</th><th>Token</th><th>Status</th>
+          <th>Used</th><th>Remaining</th><th>State</th>
+        </tr></thead>
+        <tbody>`;
+
+    if (profileTokens.length) {
+      html += `<tr><td colspan="6" style="background:rgba(0,217,255,0.08);font-weight:700;color:var(--accent)">🔑 প্রোফাইল চেক টোকেন (${profileTokens.length})</td></tr>`;
+      html += profileTokens.map(rowHtml).join('');
+    }
+    if (likeTokens.length) {
+      html += `<tr><td colspan="6" style="background:rgba(255,70,85,0.08);font-weight:700;color:var(--primary2)">❤️ লাইক টোকেন (${likeTokens.length})</td></tr>`;
+      html += likeTokens.map(rowHtml).join('');
+    }
+    html += '</tbody></table>';
+    box.innerHTML = html;
+
+  } catch (err) {
+    box.innerHTML = `<div class="empty"><div class="empty-icon">❌</div>${err.message}</div>`;
+  }
+}
+
+loadStats();
+</script>
+</body>
+</html>
